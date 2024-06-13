@@ -3,7 +3,7 @@
 This example shows how to provision an Amazon EKS cluster using [AWS Blueprints Addons](https://aws-ia.github.io/terraform-aws-eks-blueprints-addons/main/) with all the prerequisites for ODA Canvas Framework.
 
 * Deploy EKS Cluster with one managed node group in an VPC
-* Install AWS Gateway API Controller, Metrics Server, Kube-Prometheus-Stack and EKS Managed Addons (vpc-cni, kube-proxy, coredns, aws-ebs-csi-driver) using the Blueprints. 
+* Install AWS Controllers for Kubernetes (ACK) for API Gateway v2 and Amazon RDS, Metrics Server, Kube-Prometheus-Stack and EKS Managed Addons (vpc-cni, kube-proxy, coredns, aws-ebs-csi-driver) using the Blueprints. 
 * The deployment will create also a workspace for Amazon Managed Prometheus where metrics can be exported.
 * Install Istio using Helm resources in Terraform
 * Install Istio Ingress Gateway using Helm resources in Terraform

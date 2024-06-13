@@ -91,7 +91,7 @@ module "eks_blueprints_addons" {
   #---------------------------------------
   eks_addons = {
     aws-ebs-csi-driver = {
-      most_recent = true
+      most_recent              = true
       service_account_role_arn = module.ebs_csi_driver_irsa.iam_role_arn
     }
     coredns = {
@@ -120,17 +120,17 @@ module "eks_blueprints_addons" {
       node_group_type  = "canvas"
     })]
   }
-  
+
   #---------------------------------------
   # Cert Manager
   #---------------------------------------
-  enable_cert_manager         = false
+  enable_cert_manager = false
   cert_manager = {
     chart_version    = "v1.11.0"
     namespace        = "cert-manager"
     create_namespace = true
   }
-  
+
   #---------------------------------------
   # AWS Load Balancer Controller
   #---------------------------------------
@@ -165,7 +165,7 @@ module "eks_blueprints_addons" {
       }
     ],
   }
-  
+
   #---------------------------------------
   # Istio OSS & ODA Canvas Framework
   #---------------------------------------
@@ -178,7 +178,7 @@ module "eks_blueprints_addons" {
       name          = "istio-base"
       namespace     = kubernetes_namespace_v1.istio_system.metadata[0].name
     }
-    
+
     istiod = {
       chart         = "istiod"
       chart_version = local.istio_chart_version
@@ -192,7 +192,7 @@ module "eks_blueprints_addons" {
         }
       ]
     }
-    
+
     istio-ingress = {
       chart         = "gateway"
       chart_version = local.istio_chart_version
@@ -207,18 +207,17 @@ module "eks_blueprints_addons" {
               app   = "istio-ingress"
             }
             service = {
+              type = "LoadBalancer"
               annotations = {
-                "service.beta.kubernetes.io/aws-load-balancer-type"            = "external"
-                "service.beta.kubernetes.io/aws-load-balancer-nlb-target-type" = "ip"
-                "service.beta.kubernetes.io/aws-load-balancer-scheme"          = "internet-facing"
-                "service.beta.kubernetes.io/aws-load-balancer-attributes"      = "load_balancing.cross_zone.enabled=true"
+                "service.beta.kubernetes.io/aws-load-balancer-internal"   = "true"
+                "service.beta.kubernetes.io/aws-load-balancer-attributes" = "load_balancing.cross_zone.enabled=true"
               }
             }
           }
         )
       ]
     }
-    
+
     # oda-canvas = {
     #   chart            = "canvas-oda"
     #   repository       = local.oda_canvas_chart_url
@@ -239,19 +238,19 @@ module "eks_blueprints_addons" {
 
 module "eks_ack_addons" {
   source = "aws-ia/eks-ack-addons/aws"
-  
+
   cluster_name      = module.eks.cluster_name
   cluster_endpoint  = module.eks.cluster_endpoint
   oidc_provider_arn = module.eks.oidc_provider_arn
-  
+
   # ECR Credentials
   ecrpublic_username = data.aws_ecrpublic_authorization_token.token.user_name
   ecrpublic_token    = data.aws_ecrpublic_authorization_token.token.password
-  
+
   # Controllers to enable
-  enable_apigatewayv2      = true
-  enable_rds               = true
-  
+  enable_apigatewayv2 = true
+  enable_rds          = true
+
   tags = local.tags
 }
 
