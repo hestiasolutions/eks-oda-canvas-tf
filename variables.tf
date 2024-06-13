@@ -3,7 +3,7 @@ variable "region" {
   type        = string
   default     = "us-west-2"
 }
- 
+
 variable "name" {
   description = "Name of the VPC and EKS Cluster"
   type        = string
@@ -13,7 +13,7 @@ variable "name" {
 variable "eks_cluster_version" {
   description = "EKS Cluster version"
   type        = string
-  default     = "1.27"
+  default     = "1.29"
 }
 
 variable "vpc_cidr" {
@@ -24,7 +24,7 @@ variable "vpc_cidr" {
 
 variable "istio_chart_version" {
   description = "Istio Helm Chart version"
-  default     = "1.16.1"
+  default     = "1.22.0"
   type        = string
 }
 

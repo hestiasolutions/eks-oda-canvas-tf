@@ -15,7 +15,7 @@ module "eks" {
   subnet_ids = module.vpc.private_subnets
 
   manage_aws_auth_configmap = true
-  
+
   #  EKS K8s API cluster needs to be able to talk with the EKS worker nodes with port 15017/TCP and 15012/TCP which is used by Istio
   #  Istio in order to create sidecar needs to be able to communicate with webhook and for that network passage to EKS is needed.
   node_security_group_additional_rules = {
@@ -63,13 +63,13 @@ module "eks" {
 
   eks_managed_node_groups = {
     aws_canvas_nodes = {
-      name        = "aws-canvas-nodes"
+      name = "aws-canvas-nodes"
 
       min_size     = 2
       max_size     = 9
       desired_size = 5
 
-      instance_types = ["t3.large"]
+      instance_types = ["t3.xlarge"]
 
       ebs_optimized = true
       block_device_mappings = {

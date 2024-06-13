@@ -49,11 +49,18 @@ locals {
 
   account_id = data.aws_caller_identity.current.account_id
   partition  = data.aws_partition.current.partition
-  
+
   istio_chart_url     = "https://istio-release.storage.googleapis.com/charts"
   istio_chart_version = var.istio_chart_version
 
   oda_canvas_chart_url = "https://tmforum-oda.github.io/oda-canvas"
+
+  apigatewayv2_canvas = "apigatewayv2-canvas"
+
+  rds_hansen = "rds-hansen"
+
+  amp_ingest_service_account = "amp-iamproxy-ingest-service-account"
+  amp_namespace              = "kube-prometheus-stack"
 
   tags = {
     Blueprint  = local.name

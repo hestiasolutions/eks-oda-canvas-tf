@@ -135,19 +135,6 @@ module "eks_blueprints_addons" {
   # AWS Load Balancer Controller
   #---------------------------------------
   enable_aws_load_balancer_controller = true
-  
-  #---------------------------------------
-  # AWS Gateway API Controller
-  #---------------------------------------
-  enable_aws_gateway_api_controller = true
-  aws_gateway_api_controller = {
-    repository_username = data.aws_ecrpublic_authorization_token.token.user_name
-    repository_password = data.aws_ecrpublic_authorization_token.token.password
-    set = [{
-      name  = "clusterVpcId"
-      value = "module.vpc.vpc_id"
-    }]
-  }
 
   #---------------------------------------
   # Prommetheus and Grafana stack
@@ -170,7 +157,7 @@ module "eks_blueprints_addons" {
         storage_class_type  = kubernetes_storage_class.ebs_csi_encrypted_gp3_storage_class.id
       }) : templatefile("${path.module}/helm-values/kube-prometheus.yaml", {})
     ]
-    chart_version = "48.1.1"
+    chart_version = "59.0.0"
     set_sensitive = [
       {
         name  = "grafana.adminPassword"
@@ -247,7 +234,29 @@ module "eks_blueprints_addons" {
 }
 
 ################################################################################
-# AMP Resources
+# AWS Controllers for Kubernetes (ACK) Addons
+################################################################################
+
+module "eks_ack_addons" {
+  source = "aws-ia/eks-ack-addons/aws"
+  
+  cluster_name      = module.eks.cluster_name
+  cluster_endpoint  = module.eks.cluster_endpoint
+  oidc_provider_arn = module.eks.oidc_provider_arn
+  
+  # ECR Credentials
+  ecrpublic_username = data.aws_ecrpublic_authorization_token.token.user_name
+  ecrpublic_token    = data.aws_ecrpublic_authorization_token.token.password
+  
+  # Controllers to enable
+  enable_apigatewayv2      = true
+  enable_rds               = true
+  
+  tags = local.tags
+}
+
+################################################################################
+# Supporting Resources
 ################################################################################
 
 #-------------------------------------------
@@ -355,13 +364,8 @@ data "aws_iam_policy_document" "grafana" {
 }
 
 #------------------------------------------
-# Amazon Prometheus
+# Amazon Managed Prometheus
 #------------------------------------------
-locals {
-  amp_ingest_service_account = "amp-iamproxy-ingest-service-account"
-  amp_namespace              = "kube-prometheus-stack"
-}
-
 resource "aws_prometheus_workspace" "amp" {
   count = var.enable_amazon_prometheus ? 1 : 0
 
@@ -391,10 +395,9 @@ module "amp_ingest_irsa" {
   tags = local.tags
 }
 
-
-################################################################################
-# Grafana Admin credentials resources
-################################################################################
+#------------------------------------------
+# Local Grafana admin credentials resources
+#------------------------------------------
 data "aws_secretsmanager_secret_version" "admin_password_version" {
   secret_id  = aws_secretsmanager_secret.grafana.id
   depends_on = [aws_secretsmanager_secret_version.grafana]
@@ -415,4 +418,55 @@ resource "aws_secretsmanager_secret" "grafana" {
 resource "aws_secretsmanager_secret_version" "grafana" {
   secret_id     = aws_secretsmanager_secret.grafana.id
   secret_string = random_password.grafana.result
+}
+
+#------------------------------------------
+# API Gateway v2 VPC link
+#------------------------------------------
+resource "aws_security_group" "vpc_link_sg" {
+  # checkov:skip=CKV2_AWS_5
+  name        = "${local.name}-vpc-link"
+  description = "Security group for API Gateway v2 VPC link"
+  vpc_id      = module.vpc.vpc_id
+
+  ingress {
+    description = "Ingress all from VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [local.vpc_cidr]
+  }
+
+  egress {
+    description = "Egress all to VPC"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = [local.vpc_cidr]
+  }
+
+  tags = local.tags
+}
+
+resource "aws_apigatewayv2_vpc_link" "vpc_link" {
+  name               = local.name
+  security_group_ids = [resource.aws_security_group.vpc_link_sg.id]
+  subnet_ids         = module.vpc.private_subnets
+
+  tags = local.tags
+}
+
+resource "kubernetes_namespace_v1" "apigatewayv2_canvas" {
+  metadata {
+    name = local.apigatewayv2_canvas
+  }
+}
+
+#------------------------------------------
+# RDS
+#------------------------------------------
+resource "kubernetes_namespace_v1" "rds_hansen" {
+  metadata {
+    name = local.rds_hansen
+  }
 }
