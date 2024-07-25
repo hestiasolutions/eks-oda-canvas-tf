@@ -460,12 +460,3 @@ resource "kubernetes_namespace_v1" "apigatewayv2_canvas" {
     name = local.apigatewayv2_canvas
   }
 }
-
-#------------------------------------------
-# RDS
-#------------------------------------------
-resource "kubernetes_namespace_v1" "rds_hansen" {
-  metadata {
-    name = local.rds_hansen
-  }
-}

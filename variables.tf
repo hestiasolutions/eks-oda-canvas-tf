@@ -13,7 +13,7 @@ variable "name" {
 variable "eks_cluster_version" {
   description = "EKS Cluster version"
   type        = string
-  default     = "1.29"
+  default     = "1.30"
 }
 
 variable "vpc_cidr" {
@@ -32,4 +32,25 @@ variable "enable_amazon_prometheus" {
   description = "Enable AWS Managed Prometheus service"
   type        = bool
   default     = true
+}
+
+variable "aws_auth_roles" {
+  description = "additional aws auth roles"
+  type = list(
+    object(
+      {
+        rolearn  = string
+        username = string
+        groups = list(string
+        )
+      }
+    )
+  )
+  default = []
+}
+
+variable "kms_key_admin_roles" {
+  description = "list of role ARNs to add to the KMS policy"
+  type        = list(string)
+  default     = []
 }

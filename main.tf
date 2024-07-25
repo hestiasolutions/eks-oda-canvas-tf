@@ -8,10 +8,6 @@ data "aws_availability_zones" "available" {}
 data "aws_caller_identity" "current" {}
 data "aws_partition" "current" {}
 data "aws_iam_session_context" "current" {
-  # This data source provides information on the IAM source role of an STS assumed role
-  # For non-role ARNs, this data source simply passes the ARN through issuer ARN
-  # Ref https://github.com/terraform-aws-modules/terraform-aws-eks/issues/2327#issuecomment-1355581682
-  # Ref https://github.com/hashicorp/terraform-provider-aws/issues/28381
   arn = data.aws_caller_identity.current.arn
 }
 
@@ -56,8 +52,6 @@ locals {
   oda_canvas_chart_url = "https://tmforum-oda.github.io/oda-canvas"
 
   apigatewayv2_canvas = "apigatewayv2-canvas"
-
-  rds_hansen = "rds-hansen"
 
   amp_ingest_service_account = "amp-iamproxy-ingest-service-account"
   amp_namespace              = "kube-prometheus-stack"
