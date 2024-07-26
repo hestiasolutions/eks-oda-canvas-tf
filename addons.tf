@@ -169,56 +169,54 @@ module "eks_blueprints_addons" {
   #---------------------------------------
   # Istio OSS & ODA Canvas Framework
   #---------------------------------------
-  helm_releases = {
+  # helm_releases = {
 
-    istio-base = {
-      chart         = "base"
-      chart_version = local.istio_chart_version
-      repository    = local.istio_chart_url
-      name          = "istio-base"
-      namespace     = kubernetes_namespace_v1.istio_system.metadata[0].name
+    # istio-base = {
+      # chart         = "base"
+      # chart_version = local.istio_chart_version
+      # repository    = local.istio_chart_url
+      # name          = "istio-base"
+      # namespace     = kubernetes_namespace_v1.istio_system.metadata[0].name
+    # }
 
-      depends_on = [module.eks]
-    }
+    # istiod = {
+      # chart         = "istiod"
+      # chart_version = local.istio_chart_version
+      # repository    = local.istio_chart_url
+      # name          = "istiod"
+      # namespace     = kubernetes_namespace_v1.istio_system.metadata[0].name
+      # set = [
+        # {
+          # name  = "meshConfig.accessLogFile"
+          # value = "/dev/stdout"
+        # }
+      # ]
+    # }
 
-    istiod = {
-      chart         = "istiod"
-      chart_version = local.istio_chart_version
-      repository    = local.istio_chart_url
-      name          = "istiod"
-      namespace     = kubernetes_namespace_v1.istio_system.metadata[0].name
-      set = [
-        {
-          name  = "meshConfig.accessLogFile"
-          value = "/dev/stdout"
-        }
-      ]
-    }
-
-    istio-ingress = {
-      chart         = "gateway"
-      chart_version = local.istio_chart_version
-      repository    = local.istio_chart_url
-      name          = "istio-ingress"
-      namespace     = kubernetes_namespace_v1.istio-ingress.metadata[0].name
-      values = [
-        yamlencode(
-          {
-            labels = {
-              istio = "ingressgateway"
-              app   = "istio-ingress"
-            }
-            service = {
-              type = "LoadBalancer"
-              annotations = {
-                "service.beta.kubernetes.io/aws-load-balancer-internal"   = "true"
-                "service.beta.kubernetes.io/aws-load-balancer-attributes" = "load_balancing.cross_zone.enabled=true"
-              }
-            }
-          }
-        )
-      ]
-    }
+    # istio-ingress = {
+      # chart         = "gateway"
+      # chart_version = local.istio_chart_version
+      # repository    = local.istio_chart_url
+      # name          = "istio-ingress"
+      # namespace     = kubernetes_namespace_v1.istio-ingress.metadata[0].name
+      # values = [
+        # yamlencode(
+          # {
+            # labels = {
+              # istio = "ingressgateway"
+              # app   = "istio-ingress"
+            # }
+            # service = {
+              # type = "LoadBalancer"
+              # annotations = {
+                # "service.beta.kubernetes.io/aws-load-balancer-internal"   = "true"
+                # "service.beta.kubernetes.io/aws-load-balancer-attributes" = "load_balancing.cross_zone.enabled=true"
+              # }
+            # }
+          # }
+        # )
+      # ]
+    # }
 
     # oda-canvas = {
     #   chart            = "canvas-oda"
@@ -229,7 +227,7 @@ module "eks_blueprints_addons" {
     #   wait             = true
     #   timeout          = 600
     # }
-  }
+  # }
 
   tags = local.tags
 }
