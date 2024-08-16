@@ -15,7 +15,7 @@ This example shows how to provision an Amazon EKS cluster using [AWS Blueprints 
 See [here](https://aws-ia.github.io/terraform-aws-eks-blueprints/getting-started/#prerequisites) for the prerequisites and run the following command to deploy this pattern.
 
 ```sh
-git pull https://github.com/ovaleanu/eks-oda-canvas-tf.git
+git clone https://github.com/ovaleanu/eks-oda-canvas-tf.git
 cd eks-oda-canvas-tf
 ./install.sh
 ```
