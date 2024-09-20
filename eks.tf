@@ -75,10 +75,10 @@ module "eks" {
       name = "aws-canvas-nodes"
 
       min_size     = 2
-      max_size     = 9
-      desired_size = 5
+      max_size     = 2
+      desired_size = 2
 
-      instance_types = ["t3.xlarge"]
+      instance_types = ["t3.medium"]
 
       ebs_optimized = true
       block_device_mappings = {
